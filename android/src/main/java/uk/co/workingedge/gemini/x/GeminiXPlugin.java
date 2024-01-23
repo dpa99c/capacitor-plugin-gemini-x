@@ -1,11 +1,21 @@
 package uk.co.workingedge.gemini.x;
 
-import android.util.Log;
+import com.getcapacitor.JSObject;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.CapacitorPlugin;
 
-public class GeminiXPlugin {
+@CapacitorPlugin(name = "GeminiXPlugin")
+public class GeminiXPlugin extends Plugin {
 
-    public String echo(String value) {
-        Log.i("Echo", value);
-        return value;
+
+    @PluginMethod
+    public void echo(PluginCall call) {
+        String value = call.getString("value");
+
+        JSObject ret = new JSObject();
+        ret.put("value", value);
+        call.resolve(ret);
     }
 }
