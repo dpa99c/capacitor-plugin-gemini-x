@@ -1,9 +1,9 @@
 import { WebPlugin } from '@capacitor/core';
-import {GoogleGenerativeAI, GenerativeModel, SafetySetting, HarmCategory, HarmBlockThreshold} from '@google/generative-ai'
+import type { GenerativeModel, SafetySetting} from '@google/generative-ai';
+import {GoogleGenerativeAI, HarmCategory, HarmBlockThreshold} from '@google/generative-ai'
 
-import type { GeminiXPlugin  } from './definitions';
-import {SafetySettingLevel, SafetySettingHarmCategory } from './definitions';
-import { ModelParams } from './definitions';
+import type { GeminiXPlugin  , ModelParams } from './definitions';
+import {SafetySettingLevel, SafetySettingHarmCategory  } from './definitions';
 
 
 export class GeminiXWeb extends WebPlugin implements GeminiXPlugin {
@@ -20,9 +20,12 @@ export class GeminiXWeb extends WebPlugin implements GeminiXPlugin {
     const safetySettings:SafetySetting[] = [];
     if(options.params.safetySettings){
       for(const harmCategory in options.params.safetySettings){
+        const modelHarmCategory = this.mapHarmCategory(harmCategory as any),
+              harmBlockThreshold = (options.params.safetySettings as any)[harmCategory] as SafetySettingLevel,
+              modelSafetySettingLevel = this.mapSafetySettingLevel(harmBlockThreshold);
         safetySettings.push({
-          harmCategory: harmCategory as any,
-          level: options.params.safetySettings[harmCategory as any] as any
+          category: modelHarmCategory,
+          threshold: modelSafetySettingLevel
         })
       }
     }
@@ -43,21 +46,37 @@ export class GeminiXWeb extends WebPlugin implements GeminiXPlugin {
   /**************************************************************************
    * Internal Methods
    **************************************************************************/
-  private async mapHarmCategory(harmCategory:SafetySettingHarmCategory): HarmCategory{
+  private mapHarmCategory(harmCategory:SafetySettingHarmCategory): HarmCategory{
     switch (harmCategory) {
       case SafetySettingHarmCategory.HARASSMENT:
-        return HarmCategory.HARASSMENT;
+        return HarmCategory.HARM_CATEGORY_HARASSMENT;
       case SafetySettingHarmCategory.HATE_SPEECH:
-        return HarmCategory.HATE_SPEECH;
+        return HarmCategory.HARM_CATEGORY_HATE_SPEECH;
       case SafetySettingHarmCategory.SEXUALLY_EXPLICIT:
-        return HarmCategory.SEXUALLY_EXPLICIT;
+        return HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT;
       case SafetySettingHarmCategory.DANGEROUS_CONTENT:
-        return HarmCategory.DANGEROUS_CONTENT;
+        return HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT;
       case SafetySettingHarmCategory.UNSPECIFIED:
-        return HarmCategory.UNSPECIFIED;
+        return HarmCategory.HARM_CATEGORY_UNSPECIFIED;
       default:
-        return HarmCategory.UNSPECIFIED;
+        return HarmCategory.HARM_CATEGORY_UNSPECIFIED;
     }
   }
 
+  private mapSafetySettingLevel(safetySettingLevel:SafetySettingLevel): HarmBlockThreshold{
+    switch (safetySettingLevel) {
+      case SafetySettingLevel.NONE:
+        return HarmBlockThreshold.BLOCK_NONE;
+      case SafetySettingLevel.ONLY_HIGH:
+        return HarmBlockThreshold.BLOCK_ONLY_HIGH;
+      case SafetySettingLevel.MEDIUM_AND_ABOVE:
+        return HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE;
+      case SafetySettingLevel.LOW_AND_ABOVE:
+        return HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE;
+      case SafetySettingLevel.UNSPECIFIED:
+        return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
+      default:
+        return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
+    }
+  }
 }
