@@ -43,6 +43,28 @@ export class GeminiXWeb extends WebPlugin implements GeminiXPlugin {
     });
   }
 
+  async sendMessage(userInputText:string, options?: { streamResponse?:boolean, imageUris?:string[] }): Promise<{ responseText:string, isFinal:boolean }> {
+    if(!this.model){
+      throw new Error("Model not initialized");
+    }
+
+    let streamResponse = false;
+    let imageUris:string[] = [];
+    if(options){
+      streamResponse = options.streamResponse || false;
+      imageUris = options.imageUris || [];
+    }
+
+    const result = await this.model.generateContent(userInputText);
+    const response = await result.response;
+    const responseText = response.text();
+
+    return {
+      responseText: responseText,
+      isFinal: response.isFinal
+    };
+  }
+
   /**************************************************************************
    * Internal Methods
    **************************************************************************/
@@ -78,5 +100,21 @@ export class GeminiXWeb extends WebPlugin implements GeminiXPlugin {
       default:
         return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
     }
+  }
+
+  private async function fileToGenerativePart(file:File) {
+    const base64EncodedDataPromise = new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result !== 'string') {
+          throw new Error('Expected string result from FileReader');
+        }
+        resolve(reader.result.split(',')[1]);
+      }
+      reader.readAsDataURL(file);
+    });
+    return {
+      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+    };
   }
 }
