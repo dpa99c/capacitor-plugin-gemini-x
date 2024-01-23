@@ -1,8 +1,8 @@
 import { WebPlugin } from '@capacitor/core';
 import {GoogleGenerativeAI, GenerativeModel, SafetySetting, HarmCategory, HarmBlockThreshold} from '@google/generative-ai'
 
-import type { GeminiXPlugin, SafetySettingLevel, SafetySettingHarmCategory } from './definitions';
-import {SafetySettingLevel, } from './definitions';
+import type { GeminiXPlugin  } from './definitions';
+import {SafetySettingLevel, SafetySettingHarmCategory } from './definitions';
 import { ModelParams } from './definitions';
 
 
