@@ -17,10 +17,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/workingedge/capacitor-plugin-gemini-x.git"
+    "url": "git+https://github.com/dpa99c/capacitor-plugin-gemini-x.git"
   },
   "bugs": {
-    "url": "https://bitbucket.org/workingedge/capacitor-plugin-gemini-x/issues"
+    "url": "https://github.com/dpa99c/capacitor-plugin-gemini-x/issues"
   },
   "keywords": [
     "capacitor",
