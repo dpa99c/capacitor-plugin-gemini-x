@@ -1,10 +1,10 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { GeminiXPluginPlugin } from './definitions';
+import type { GeminiXPlugin } from './definitions';
 
-const GeminiXPlugin = registerPlugin<GeminiXPluginPlugin>('GeminiXPlugin', {
-  web: () => import('./web').then(m => new m.GeminiXPluginWeb()),
+const GeminiX = registerPlugin<GeminiXPlugin>('GeminiX', {
+  web: () => import('./web').then(m => new m.GeminiXWeb()),
 });
 
 export * from './definitions';
-export { GeminiXPlugin };
+export { GeminiX };

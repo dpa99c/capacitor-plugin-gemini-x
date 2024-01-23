@@ -1,4 +1,4 @@
-export interface GeminiXPluginPlugin {
+export interface GeminiXPlugin {
   initModel(options: { params:ModelParams }): Promise<void>;
   sendMessage(userInputText:string, options?: { streamResponse?:boolean, imageUris?:string[] }): Promise<{ responseText:string, isFinal:boolean }>;
   countTokens(userInputText:string, options?: { imageUris?:string[] }): Promise<{ count:number }>;

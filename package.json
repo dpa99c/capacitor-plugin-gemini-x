@@ -74,5 +74,8 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.1.3"
   }
 }
