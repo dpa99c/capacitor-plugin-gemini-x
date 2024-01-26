@@ -18,7 +18,7 @@ import uk.co.workingedge.gemini.x.lib.HistoryPart
 import uk.co.workingedge.gemini.x.lib.ImageHistoryPart
 import uk.co.workingedge.gemini.x.lib.TextHistoryPart
 
-@CapacitorPlugin(name = "GeminiXPlugin")
+@CapacitorPlugin(name = "GeminiX")
 class GeminiXPlugin : Plugin() {
     /*************************************************************************
      * Plugin Methods
