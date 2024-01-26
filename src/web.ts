@@ -1,108 +1,95 @@
 import { WebPlugin } from '@capacitor/core';
-import type { GenerativeModel, SafetySetting} from '@google/generative-ai';
-import {GoogleGenerativeAI, HarmCategory, HarmBlockThreshold} from '@google/generative-ai'
+import type { GenerativeContentBlob } from '@google/generative-ai';
 
-import type { GeminiXPlugin  , ModelParams } from './definitions';
-import {SafetySettingLevel, SafetySettingHarmCategory  } from './definitions';
+import type { GeminiXPlugin , PluginCountTokensOptions, PluginSendMessageOptions , PluginCountChatTokensOptions, PluginChatHistoryItem } from './definitions';
+import type { CountTokensOptions, ModelParams, SendMessageOptions, ModelChatHistoryItem, ChatHistoryItem } from './lib/GeminiX';
+import { GeminiX } from './lib/GeminiX';
+import {  } from './definitions';
+
 
 
 export class GeminiXWeb extends WebPlugin implements GeminiXPlugin {
-  private generativeAI: GoogleGenerativeAI | undefined;
-  private model:GenerativeModel | undefined;
 
   /**************************************************************************
    * Plugin Methods
    **************************************************************************/
 
-  async initModel(options: { params:ModelParams }): Promise<void> {
-    this.generativeAI = new GoogleGenerativeAI(options.params.apiKey);
-
-    const safetySettings:SafetySetting[] = [];
-    if(options.params.safetySettings){
-      for(const harmCategory in options.params.safetySettings){
-        const modelHarmCategory = this.mapHarmCategory(harmCategory as any),
-              harmBlockThreshold = (options.params.safetySettings as any)[harmCategory] as SafetySettingLevel,
-              modelSafetySettingLevel = this.mapSafetySettingLevel(harmBlockThreshold);
-        safetySettings.push({
-          category: modelHarmCategory,
-          threshold: modelSafetySettingLevel
-        })
-      }
-    }
-
-    this.model = this.generativeAI.getGenerativeModel({
-      model: options.params.modelName,
-      safetySettings: safetySettings,
-      generationConfig: {
-        temperature: options.params.temperature,
-        topK: options.params.topK,
-        topP: options.params.topP,
-        maxOutputTokens: options.params.maxOutputTokens,
-        stopSequences: options.params.stopSequences,
-      }
-    });
+  async initModel(args: {options: { params:ModelParams }}): Promise<void> {
+    return await GeminiX.initModel(args.options.params);
   }
 
-  async sendMessage(userInputText:string, options?: { streamResponse?:boolean, imageUris?:string[] }): Promise<{ responseText:string, isFinal:boolean }> {
-    if(!this.model){
-      throw new Error("Model not initialized");
-    }
-
-    let streamResponse = false;
-    let imageUris:string[] = [];
-    if(options){
-      streamResponse = options.streamResponse || false;
-      imageUris = options.imageUris || [];
-    }
-
-    const result = await this.model.generateContent(userInputText);
-    const response = await result.response;
-    const responseText = response.text();
-
-    return {
-      responseText: responseText,
-      isFinal: response.isFinal
+  async sendMessage(args: {inputText:string, options?: PluginSendMessageOptions}): Promise<string> {
+    const pluginOptions:SendMessageOptions = {
+      onResponseChunk: args.options?.onResponseChunk,
     };
+    if (args.options?.imageUris) {
+      pluginOptions.images = await Promise.all(args.options.imageUris.map(file => this.uriToGenerativeBlob(file)));
+    }
+    return await GeminiX.sendMessage(args.inputText, pluginOptions);
   }
+
+  async countTokens(args: {inputText:string, options?: PluginCountTokensOptions}): Promise<number> {
+    const pluginOptions:CountTokensOptions = {};
+    if (args.options?.imageUris) {
+      pluginOptions.images = await Promise.all(args.options.imageUris.map(file => this.uriToGenerativeBlob(file)));
+    }
+    return await GeminiX.countTokens(args.inputText, pluginOptions);
+  }
+  
+  async initChat(args: {chatHistory?:PluginChatHistoryItem[]}): Promise<void>{
+    const modelHistory:ChatHistoryItem[] = [];
+    if(args.chatHistory){
+      for(const item of args.chatHistory){
+        const chatItem:ChatHistoryItem = {
+          isUser: item.isUser,
+          text: item.text,
+        };
+        if(item.imageUris){
+          chatItem.images = [];
+          for(const uri of item.imageUris){
+            const blob = await this.uriToGenerativeBlob(uri);
+            chatItem.images.push(blob);
+          }
+        }
+        modelHistory.push(chatItem);
+      }
+    }
+    return await GeminiX.initChat(modelHistory);
+  }
+
+  async sendChatMessage(args: {inputText:string, options?: PluginSendMessageOptions}): Promise<string> {
+    const pluginOptions:SendMessageOptions = {
+      onResponseChunk: args.options?.onResponseChunk,
+    };
+    if (args.options?.imageUris) {
+      pluginOptions.images = await Promise.all(args.options.imageUris.map(file => this.uriToGenerativeBlob(file)));
+    }
+    return await GeminiX.sendChatMessage(args.inputText, pluginOptions);
+  }
+  
+  async countChatTokens(args: {options?:PluginCountChatTokensOptions}): Promise<number> {
+    const pluginOptions:CountTokensOptions = {};
+    if (args.options?.imageUris) {
+      pluginOptions.images = await Promise.all(args.options.imageUris.map(file => this.uriToGenerativeBlob(file)));
+    }
+    return await GeminiX.countChatTokens(pluginOptions);
+  }
+
+  async getChatHistory(): Promise<ModelChatHistoryItem[]> {
+    return await GeminiX.getChatHistory();
+  }
+  
 
   /**************************************************************************
    * Internal Methods
    **************************************************************************/
-  private mapHarmCategory(harmCategory:SafetySettingHarmCategory): HarmCategory{
-    switch (harmCategory) {
-      case SafetySettingHarmCategory.HARASSMENT:
-        return HarmCategory.HARM_CATEGORY_HARASSMENT;
-      case SafetySettingHarmCategory.HATE_SPEECH:
-        return HarmCategory.HARM_CATEGORY_HATE_SPEECH;
-      case SafetySettingHarmCategory.SEXUALLY_EXPLICIT:
-        return HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT;
-      case SafetySettingHarmCategory.DANGEROUS_CONTENT:
-        return HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT;
-      case SafetySettingHarmCategory.UNSPECIFIED:
-        return HarmCategory.HARM_CATEGORY_UNSPECIFIED;
-      default:
-        return HarmCategory.HARM_CATEGORY_UNSPECIFIED;
-    }
+  private uriToFile(uri:string): Promise<File> {
+    return fetch(uri).then(response => response.blob()).then(blob => new File([blob], 'image.png'));
   }
 
-  private mapSafetySettingLevel(safetySettingLevel:SafetySettingLevel): HarmBlockThreshold{
-    switch (safetySettingLevel) {
-      case SafetySettingLevel.NONE:
-        return HarmBlockThreshold.BLOCK_NONE;
-      case SafetySettingLevel.ONLY_HIGH:
-        return HarmBlockThreshold.BLOCK_ONLY_HIGH;
-      case SafetySettingLevel.MEDIUM_AND_ABOVE:
-        return HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE;
-      case SafetySettingLevel.LOW_AND_ABOVE:
-        return HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE;
-      case SafetySettingLevel.UNSPECIFIED:
-        return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
-      default:
-        return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
-    }
-  }
-
-  private async function fileToGenerativePart(file:File) {
+  private async uriToGenerativeBlob(uri:string): Promise<GenerativeContentBlob> {
+    const file = await this.uriToFile(uri),
+      mimeType = file.type;
     const base64EncodedDataPromise = new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -114,7 +101,8 @@ export class GeminiXWeb extends WebPlugin implements GeminiXPlugin {
       reader.readAsDataURL(file);
     });
     return {
-      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+      data: await base64EncodedDataPromise as string,
+      mimeType
     };
   }
 }
