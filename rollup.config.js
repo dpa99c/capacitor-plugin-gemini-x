@@ -4,7 +4,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorGeminiXPlugin',
+      name: 'capacitorGeminiX',
       globals: {
         '@capacitor/core': 'capacitorExports',
       },
