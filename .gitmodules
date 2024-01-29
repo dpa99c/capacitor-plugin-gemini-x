@@ -4,3 +4,6 @@
 [submodule "ios/Plugin/lib"]
 	path = ios/Plugin/lib
 	url = git@bitbucket.org:workingedge/gemini-x-ios.git
+[submodule "src/lib"]
+	path = src/lib
+	url = git@bitbucket.org:workingedge/gemini-x-web.git
