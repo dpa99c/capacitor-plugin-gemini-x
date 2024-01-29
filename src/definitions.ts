@@ -4,24 +4,46 @@ import {SafetySettingLevel, SafetySettingHarmCategory} from './lib/GeminiX';
 export type {ModelParams, ModelChatHistoryItem, SafetySettings};
 export {SafetySettingLevel, SafetySettingHarmCategory};
 
+export const GeminiXResponseChunkEvent = 'GeminiXResponseChunk';
+
+export interface GeminiXResponseChunk {
+  response:string,
+  isChat:boolean
+}
+
+export interface GeminiXResponseCount {
+  count:number,
+  isChat:boolean
+}
+
+/**
+ * An image to be given to the model specified by a URI.
+ * The mimeType is optional and will attempt to be inferred from the URI if not specified.
+ */
+export interface GeminiXImage {
+  uri:string,
+  mimeType?:string,
+}
+
 export interface PluginSendMessageOptions {
   /**
    * List of image URIs to be given to the model.
    */
-  imageUris?:string[],
+  images?:GeminiXImage[],
   /**
-   * Callback function that will be called for each chunk of the response.
-   * If this is defined, the response will be streamed back to the client as it is generated, as well as the complete response being returned as a single string after the generation is complete.
-   * If this is not defined, the response will only be returned as a single string after the generation is complete.
+   * Whether to stream the response from the model.
+   * If `true`, then the `success` callback will be called multiple times with partial responses until the final response is received. The final response will be the full model response text and `isComplete` will be `true`.
+   * Default is `false`.
    */
-  onResponseChunk?: (responseTextChunk:string) => void
+  streamResponse?: boolean
 }
+
 
 export interface PluginCountTokensOptions {
   /**
    * List of image URIs to be given to the model.
    */
-  imageUris?:string[]
+  images?:GeminiXImage[]
 }
 
 export interface PluginCountChatTokensOptions {
@@ -32,30 +54,30 @@ export interface PluginCountChatTokensOptions {
   /**
    * List of image URIs to be given to the model.
    */
-  imageUris?:string[]
+  images?:GeminiXImage[]
 }
 
 export interface PluginChatHistoryItem {
   isUser:boolean;
   text?:string;
-  imageUris?:string[]
+  images?:GeminiXImage[]
 }
 
 export interface GeminiXPlugin {
   /**
    * Initialize the model with the given parameters.
    */
-  initModel(args: {options: { params:ModelParams }}): Promise<void>;
+  initModel(args: { params:ModelParams }): Promise<void>;
 
   /**
    * Send a message to the model and return the response.
    */
-  sendMessage(args: {inputText:string, options?: PluginSendMessageOptions}): Promise<string>;
+  sendMessage(args: {inputText:string, options?: PluginSendMessageOptions}): Promise<GeminiXResponseChunk>;
 
   /**
    * Count the number of tokens in the given input text.
    */
-  countTokens(args: {inputText:string, options?: PluginCountTokensOptions}): Promise<number>;
+  countTokens(args: {inputText:string, options?: PluginCountTokensOptions}): Promise<GeminiXResponseCount>;
 
   /**
    * Initialize a chat session with optional chat history.
@@ -66,12 +88,12 @@ export interface GeminiXPlugin {
   /**
    * Send a message to the model for the current chat session and return the response.
    */
-  sendChatMessage(args: {inputText:string, options?: PluginSendMessageOptions}): Promise<string>;
+  sendChatMessage(args: {inputText:string, options?: PluginSendMessageOptions}): Promise<GeminiXResponseChunk>;
 
   /**
    * Count the number of tokens for the current chat session with optional input text and images.
    */
-  countChatTokens(args: {options?:PluginCountChatTokensOptions}): Promise<number>;
+  countChatTokens(args: {options?:PluginCountChatTokensOptions}): Promise<GeminiXResponseCount>;
 
   /**
    * Get the chat history for the current chat session.

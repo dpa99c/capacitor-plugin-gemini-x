@@ -16,290 +16,324 @@ import uk.co.workingedge.gemini.x.lib.BlobHistoryPart
 import uk.co.workingedge.gemini.x.lib.GeminiX
 import uk.co.workingedge.gemini.x.lib.HistoryItem
 import uk.co.workingedge.gemini.x.lib.HistoryPart
+import uk.co.workingedge.gemini.x.lib.Image
 import uk.co.workingedge.gemini.x.lib.ImageHistoryPart
 import uk.co.workingedge.gemini.x.lib.TextHistoryPart
 
 @CapacitorPlugin(name = "GeminiX")
 class GeminiXPlugin : Plugin() {
+    private val GeminiXResponseChunkEvent = "GeminiXResponseChunk"
     /*************************************************************************
      * Plugin Methods
      ************************************************************************/
 
     @PluginMethod
     fun initModel(call: PluginCall) {
-        val params = call.getObject("params")
+        try {
+            val params = call.getObject("params")
 
-        // Required params
-        val modelName = params.getString("modelName")!!
-        val apiKey = params.getString("apiKey")!!
+            // Required params
+            val modelName = params.getString("modelName")!!
+            val apiKey = params.getString("apiKey")!!
 
-        // Optional params
-        var temperature: Float? = null
-        if (params.has("temperature")) {
-            temperature = params.getLong("temperature").toFloat()
-        }
-
-        var topK: Int? = null
-        if (params.has("topK")) {
-            topK = params.getInt("topK")
-        }
-
-        var topP: Float?  = null
-        if (params.has("topP")) {
-            topP = params.getLong("topP").toFloat()
-        }
-
-        var maxOutputTokens: Int?  = null
-        if (params.has("maxOutputTokens")) {
-            maxOutputTokens = params.getInt("maxOutputTokens")
-        }
-
-        var stopSequences: List<String>? = null
-        if (params.has("stopSequences")) {
-            val stopSequenesJSONArray = params.getJSONArray("stopSequences")
-            val stopSequencesArray = arrayListOf<String>()
-            for (i in 0 until stopSequenesJSONArray.length()) {
-                stopSequencesArray.add(stopSequenesJSONArray.getString(i))
+            // Optional params
+            var temperature: Float? = null
+            if (params.has("temperature")) {
+                temperature = params.getLong("temperature").toFloat()
             }
-            stopSequences = stopSequencesArray.toList()
-        }
 
-        val config = mutableMapOf<String, Any>()
-        if (temperature != null) {
-            config["temperature"] = temperature
-        }
-        if (topK != null) {
-            config["topK"] = topK
-        }
-        if (topP != null) {
-            config["topP"] = topP
-        }
-        if (maxOutputTokens != null) {
-            config["maxOutputTokens"] = maxOutputTokens
-        }
-        if (stopSequences != null) {
-            config["stopSequences"] = stopSequences
-        }
-
-        var safetySettings: Map<String, String>? = null
-        if (params.has("safetySettings")) {
-            val safetySettingsJSONObject = params.getJSONObject("safetySettings")
-            val safetySettingsMap = mutableMapOf<String, String>()
-            for (key in safetySettingsJSONObject.keys()) {
-                safetySettingsMap[key] = safetySettingsJSONObject.getString(key)
+            var topK: Int? = null
+            if (params.has("topK")) {
+                topK = params.getInt("topK")
             }
-            safetySettings = safetySettingsMap.toMap()
+
+            var topP: Float?  = null
+            if (params.has("topP")) {
+                topP = params.getLong("topP").toFloat()
+            }
+
+            var maxOutputTokens: Int?  = null
+            if (params.has("maxOutputTokens")) {
+                maxOutputTokens = params.getInt("maxOutputTokens")
+            }
+
+            var stopSequences: List<String>? = null
+            if (params.has("stopSequences")) {
+                val stopSequenesJSONArray = params.getJSONArray("stopSequences")
+                val stopSequencesArray = arrayListOf<String>()
+                for (i in 0 until stopSequenesJSONArray.length()) {
+                    stopSequencesArray.add(stopSequenesJSONArray.getString(i))
+                }
+                stopSequences = stopSequencesArray.toList()
+            }
+
+            val config = mutableMapOf<String, Any>()
+            if (temperature != null) {
+                config["temperature"] = temperature
+            }
+            if (topK != null) {
+                config["topK"] = topK
+            }
+            if (topP != null) {
+                config["topP"] = topP
+            }
+            if (maxOutputTokens != null) {
+                config["maxOutputTokens"] = maxOutputTokens
+            }
+            if (stopSequences != null) {
+                config["stopSequences"] = stopSequences
+            }
+
+            var safetySettings: Map<String, String>? = null
+            if (params.has("safetySettings")) {
+                val safetySettingsJSONObject = params.getJSONObject("safetySettings")
+                val safetySettingsMap = mutableMapOf<String, String>()
+                for (key in safetySettingsJSONObject.keys()) {
+                    safetySettingsMap[key] = safetySettingsJSONObject.getString(key)
+                }
+                safetySettings = safetySettingsMap.toMap()
+            }
+
+            GeminiX.init(modelName, apiKey, config, safetySettings)
+
+            call.resolve()
+        } catch (e: Exception) {
+            call.reject(e.message)
         }
-
-        GeminiX.init(modelName, apiKey, config, safetySettings)
-
-        call.resolve()
     }
 
     @PluginMethod
     fun sendMessage(call: PluginCall) {
-        var streamResponse = false
-        var imageUris = JSONArray()
+        try {
+            var streamResponse = false
+            var images = JSONArray()
 
-        val inputText = call.getString("inputText")!!
-        if(call.hasOption("options")){
-            val opts = call.getObject("options")
-            if(opts.has("streamResponse")){
-                streamResponse = opts.getBoolean("streamResponse")
+            val inputText = call.getString("inputText")!!
+            if(call.hasOption("options")){
+                val opts = call.getObject("options")
+                if(opts.has("streamResponse")){
+                    streamResponse = opts.getBoolean("streamResponse")
+                }
+                if(opts.has("images")){
+                    images = opts.getJSONArray("images")
+                }
             }
-            if(opts.has("imageUris")){
-                imageUris = opts.getJSONArray("imageUris")
-            }
+
+            val modelImages:List<Image> = GeminiX.getModelImages(images, this.context)
+
+            GeminiX.sendMessage(
+                { response, isComplete ->
+                    val result = JSObject()
+                    result.put("response", response)
+                    if(isComplete){
+                        call.resolve(result)
+                    }else{
+                        result.put("isChat", false)
+                        bridge.triggerWindowJSEvent(GeminiXResponseChunkEvent, result.toString())
+                    }
+                },
+                { error ->
+                    call.reject(error)
+                }, inputText, modelImages, streamResponse)
+        } catch (e: Exception) {
+            call.reject(e.message)
         }
-
-        val images:List<Bitmap> = GeminiX.getBitmapsForUris(imageUris, this.context)
-
-
-        GeminiX.sendMessage(
-            { response, isFinal ->
-                val result = JSObject()
-                result.put("response", response)
-                result.put("isFinal", isFinal)
-
-                call.setKeepAlive(streamResponse && !isFinal)
-                call.resolve(result)
-            },
-            { error ->
-                call.setKeepAlive(streamResponse)
-                call.reject(error)
-            }, inputText, images, streamResponse)
     }
 
     @PluginMethod
     fun countTokens(call: PluginCall) {
-        var imageUris = JSONArray()
+        try {
+            var images = JSONArray()
 
-        val inputText = call.getString("inputText")!!
-        if(call.hasOption("options")){
-            val opts = call.getObject("options")
-            if(opts.has("imageUris")){
-                imageUris = opts.getJSONArray("imageUris")
+            val inputText = call.getString("inputText")!!
+            if(call.hasOption("options")){
+                val opts = call.getObject("options")
+                if(opts.has("images")){
+                    images = opts.getJSONArray("images")
+                }
             }
+
+            val modelImages:List<Image> = GeminiX.getModelImages(images, this.context)
+
+            GeminiX.countTokens(
+                { response ->
+                    val result = JSObject()
+                    result.put("count", response)
+                    result.put("isChat", false)
+                    call.resolve(result)
+                },
+                { error ->
+                    call.reject(error)
+                }, inputText, modelImages)
+        } catch (e: Exception) {
+            call.reject(e.message)
         }
-
-        val images:List<Bitmap> = GeminiX.getBitmapsForUris(imageUris, this.context)
-
-        GeminiX.countTokens(
-            { response ->
-                val result = JSObject()
-                result.put("count", response)
-                call.resolve(result)
-            },
-            { error ->
-                call.reject(error)
-            }, inputText, images)
     }
 
     @PluginMethod
     fun initChat(call: PluginCall) {
-        val history: MutableList<HistoryItem> = mutableListOf()
-        if(call.hasOption("history")){
-            val jsonHistory = call.getArray("history")
-            for (i in 0 until jsonHistory.length()) {
-                val item = jsonHistory.getJSONObject(i)
-                val isUser = item.getBoolean("isUser")
+        try {
+            val history: MutableList<HistoryItem> = mutableListOf()
+            if(call.hasOption("chatHistory")){
+                val jsonHistory = call.getArray("chatHistory")
+                for (i in 0 until jsonHistory.length()) {
+                    val item = jsonHistory.getJSONObject(i)
+                    val isUser = item.getBoolean("isUser")
 
-                val parts = item.getJSONArray("parts")
-                val historyParts: MutableList<HistoryPart> = mutableListOf()
+                    val historyParts: MutableList<HistoryPart> = mutableListOf()
 
-                for (j in 0 until parts.length()) {
-                    val part = parts.getJSONObject(j)
+                    if(item.has("text")){
+                        val text = item.getString("text");
+                        val historyPart:HistoryPart = TextHistoryPart(text)
+                        historyParts.add(historyPart)
+                    }
 
-                    val historyPart:HistoryPart = when (val type = part.getString("type")) {
-                        "text" -> {
-                            val text = part.getString("content")
-                            TextHistoryPart(text)
-                        }
-
-                        "image" -> {
-                            val uri = part.getString("content")
+                    if(item.has("images")){
+                        val images = item.getJSONArray("images")
+                        for (j in 0 until images.length()) {
+                            val image = images.getJSONObject(j)
+                            val uri = image.getString("uri")
                             val bitmap = GeminiX.getBitmapFromUri(uri, this.context)
-                            ImageHistoryPart(bitmap)
-                        }
-
-                        else -> {
-                            throw Exception("Unsupported part type: $type")
+                            var historyPart:HistoryPart?
+                            if(image.has("mimeType")){
+                                val mimeType = image.getString("mimeType")
+                                val blob = GeminiX.bitmapToByteArray(bitmap)
+                                historyPart = BlobHistoryPart(blob, mimeType)
+                            }else{
+                                historyPart = ImageHistoryPart(bitmap)
+                            }
+                            historyParts.add(historyPart)
                         }
                     }
-                    historyParts.add(historyPart)
+                    val historyItem = HistoryItem(historyParts, isUser)
+                    history.add(historyItem)
                 }
-                val historyItem = HistoryItem(historyParts, isUser)
-                history.add(historyItem)
             }
-        }
 
-        GeminiX.initChat(
-            {
-                call.resolve()
-            },
-            { error ->
-                call.reject(error)
-            }, history)
+            GeminiX.initChat(
+                {
+                    call.resolve()
+                },
+                { error ->
+                    call.reject(error)
+                }, history)
+        } catch (e: Exception) {
+            call.reject(e.message)
+        }
     }
 
     @PluginMethod
     fun sendChatMessage(call: PluginCall) {
-        var streamResponse = false
-        var imageUris = JSONArray()
+        try {
+            var streamResponse = false
+            var images = JSONArray()
 
-        val inputText = call.getString("inputText")!!
-        if(call.hasOption("options")){
-            val opts = call.getObject("options")
-            if(opts.has("streamResponse")){
-                streamResponse = opts.getBoolean("streamResponse")
+            val inputText = call.getString("inputText")!!
+            if(call.hasOption("options")){
+                val opts = call.getObject("options")
+                if(opts.has("streamResponse")){
+                    streamResponse = opts.getBoolean("streamResponse")
+                }
+                if(opts.has("images")){
+                    images = opts.getJSONArray("images")
+                }
             }
-            if(opts.has("imageUris")){
-                imageUris = opts.getJSONArray("imageUris")
-            }
+
+            val modelImages:List<Image> = GeminiX.getModelImages(images, this.context)
+
+
+            GeminiX.sendChatMessage(
+                { response, isComplete ->
+                    val result = JSObject()
+                    result.put("response", response)
+                    if(isComplete){
+                        call.resolve(result)
+                    }else{
+                        result.put("isChat", true)
+                        bridge.triggerWindowJSEvent(GeminiXResponseChunkEvent, result.toString())
+                    }
+                },
+                { error ->
+                    call.reject(error)
+                }, inputText, modelImages, streamResponse)
+        } catch (e: Exception) {
+            call.reject(e.message)
         }
-
-        val images:List<Bitmap> = GeminiX.getBitmapsForUris(imageUris, this.context)
-
-
-        GeminiX.sendChatMessage(
-            { response, isFinal ->
-                val result = JSObject()
-                result.put("response", response)
-                result.put("isFinal", isFinal)
-
-                call.setKeepAlive(streamResponse && !isFinal)
-                call.resolve(result)
-            },
-            { error ->
-                call.setKeepAlive(streamResponse)
-                call.reject(error)
-            }, inputText, images, streamResponse)
     }
 
     @PluginMethod
     fun countChatTokens(call: PluginCall) {
-        var inputText:String? = null
-        var imageUris = JSONArray()
+        try {
+            var inputText:String? = null
+            var images = JSONArray()
 
-        if(call.hasOption("options")){
-            val opts = call.getObject("options")
-            if(opts.has("imageUris")){
-                imageUris = opts.getJSONArray("imageUris")
+            if(call.hasOption("options")){
+                val opts = call.getObject("options")
+                if(opts.has("images")){
+                    images = opts.getJSONArray("images")
+                }
+                if(opts.has("inputText")){
+                    inputText = opts.getString("inputText")
+                }
             }
-            if(opts.has("inputText")){
-                inputText = opts.getString("inputText")
-            }
+
+            val modelImages:List<Image> = GeminiX.getModelImages(images, this.context)
+
+            GeminiX.countChatTokens(
+                { response ->
+                    val result = JSObject()
+                    result.put("count", response)
+                    result.put("isChat", true)
+                    call.resolve(result)
+                },
+                { error ->
+                    call.reject(error)
+                }, inputText, modelImages)
+        } catch (e: Exception) {
+            call.reject(e.message)
         }
-
-        val images:List<Bitmap> = GeminiX.getBitmapsForUris(imageUris, this.context)
-
-        GeminiX.countChatTokens(
-            { response ->
-                val result = JSObject()
-                result.put("count", response)
-                call.resolve(result)
-            },
-            { error ->
-                call.reject(error)
-            }, inputText, images)
     }
 
     @PluginMethod
     fun getChatHistory(call: PluginCall) {
-        GeminiX.getChatHistory(
-            { history ->
-                val result = JSONArray()
-                for (item in history) {
-                    val itemJSON = JSONObject()
-                    itemJSON.put("isUser", item.isUser)
-                    val partsJSON = JSONArray()
-                    for (part in item.parts) {
-                        val partJSON = JSONObject()
-                        when (part) {
-                            is TextHistoryPart -> {
-                                partJSON.put("type", "text")
-                                partJSON.put("content", part.content)
+        try {
+            GeminiX.getChatHistory(
+                { history ->
+                    val result = JSONArray()
+                    for (item in history) {
+                        val itemJSON = JSONObject()
+                        itemJSON.put("isUser", item.isUser)
+                        val partsJSON = JSONArray()
+                        for (part in item.parts) {
+                            val partJSON = JSONObject()
+                            when (part) {
+                                is TextHistoryPart -> {
+                                    partJSON.put("type", "text")
+                                    partJSON.put("content", part.content)
+                                }
+                                is ImageHistoryPart -> {
+                                    partJSON.put("type", "image/bitmap")
+                                    partJSON.put("content", GeminiX.bitmapToBase64(part.content))
+                                }
+                                is BlobHistoryPart -> {
+                                    partJSON.put("type", part.mimeType)
+                                    val contentString = Base64.encodeToString(part.content, Base64.DEFAULT)
+                                    partJSON.put("content", contentString)
+                                }
                             }
-                            is ImageHistoryPart -> {
-                                partJSON.put("type", "image/bitmap")
-                                partJSON.put("content", GeminiX.bitmapToBase64(part.content))
-                            }
-                            is BlobHistoryPart -> {
-                                partJSON.put("type", part.mimeType)
-                                val contentString = Base64.encodeToString(part.content, Base64.DEFAULT)
-                                partJSON.put("content", contentString)
-                            }
+                            partsJSON.put(partJSON)
                         }
-                        partsJSON.put(partJSON)
+                        itemJSON.put("parts", partsJSON)
+                        result.put(itemJSON)
                     }
-                    itemJSON.put("parts", partsJSON)
-                    result.put(itemJSON)
+                    call.resolve(JSObject().put("history", result))
+                },
+                { error ->
+                    call.reject(error)
                 }
-                call.resolve(JSObject().put("history", result))
-            },
-            { error ->
-                call.reject(error)
-            }
-        )
+            )
+        } catch (e: Exception) {
+            call.reject(e.message)
+        }
     }
 }

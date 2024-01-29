@@ -20,6 +20,7 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     namespace "uk.co.workingedge.gemini.x"
