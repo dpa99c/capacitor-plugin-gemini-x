@@ -1,17 +1,18 @@
 package uk.co.workingedge.gemini.x
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
+
 import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
+
 import org.json.JSONArray
 import org.json.JSONObject
-import uk.co.workingedge.gemini.x.lib.BlobHistoryPart
 
+import uk.co.workingedge.gemini.x.lib.BlobHistoryPart
 import uk.co.workingedge.gemini.x.lib.GeminiX
 import uk.co.workingedge.gemini.x.lib.HistoryItem
 import uk.co.workingedge.gemini.x.lib.HistoryPart

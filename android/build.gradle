@@ -6,12 +6,16 @@ ext {
 }
 
 buildscript {
+    ext.kotlinVersion = project.hasProperty('kotlinVersion') ? rootProject.ext.kotlinVersion : '1.9.0'
+    ext.coreKtx = project.hasProperty('coreKtx') ? rootProject.ext.coreKtx : '1.9.0'
+
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
@@ -37,8 +41,8 @@ android {
         abortOnError false
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_18
+        targetCompatibility JavaVersion.VERSION_18
     }
 }
 
@@ -52,8 +56,10 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
-    implementation "com.google.ai.client.generativeai:generativeai:0.1.1"
+    implementation "com.google.ai.client.generativeai:generativeai:0.1.2"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation "androidx.core:core-ktx:$coreKtx"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 }
