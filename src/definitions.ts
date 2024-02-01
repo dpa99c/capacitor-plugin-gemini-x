@@ -4,13 +4,23 @@ import {SafetySettingLevel, SafetySettingHarmCategory} from './lib/GeminiX';
 export type {ModelParams, ModelChatHistoryItem, SafetySettings};
 export {SafetySettingLevel, SafetySettingHarmCategory};
 
+/**
+ * Event emitted on the `window` object when a streaming response chunk is received from the model.
+ */
 export const GeminiXResponseChunkEvent = 'GeminiXResponseChunk';
 
+/**
+ * Model response data passed to back to `sendMessage` and `sendChatMessage` functions.
+ * Also passed to event handlers registered on the `window` object for the `GeminiXResponseChunkEvent`.
+ */
 export interface GeminiXResponseChunk {
   response:string,
   isChat:boolean
 }
 
+/**
+ * Model response data passed to back to `countTokens` and `countChatTokens` functions.
+ */
 export interface GeminiXResponseCount {
   count:number,
   isChat:boolean
@@ -31,8 +41,9 @@ export interface PluginSendMessageOptions {
    */
   images?:GeminiXImage[],
   /**
-   * Whether to stream the response from the model.
-   * If `true`, then the `success` callback will be called multiple times with partial responses until the final response is received. The final response will be the full model response text and `isComplete` will be `true`.
+   * Whether to stream the response from the model before the final response is received.
+   * If `true`, then event listeners registered on the `window` object for the `GeminiXResponseChunkEvent` will be called with partial responses until the final response is received.
+   * The final response will be the full model response text.
    * Default is `false`.
    */
   streamResponse?: boolean
@@ -41,7 +52,7 @@ export interface PluginSendMessageOptions {
 
 export interface PluginCountTokensOptions {
   /**
-   * List of image URIs to be given to the model.
+   * List of image images to be given to the model.
    */
   images?:GeminiXImage[]
 }
@@ -52,14 +63,23 @@ export interface PluginCountChatTokensOptions {
    */
   inputText?:string,
   /**
-   * List of image URIs to be given to the model.
+   * List of images to be given to the model.
    */
   images?:GeminiXImage[]
 }
 
 export interface PluginChatHistoryItem {
+  /**
+   * Whether the message is from the user or the model.
+   */
   isUser:boolean;
+  /**
+   * The text of the message.
+   */
   text?:string;
+  /**
+   * List of images to be given to the model.
+   */
   images?:GeminiXImage[]
 }
 
@@ -81,7 +101,6 @@ export interface GeminiXPlugin {
 
   /**
    * Initialize a chat session with optional chat history.
-   * @param args
    */
   initChat(args: {chatHistory?:PluginChatHistoryItem[]}): Promise<void>;
 
