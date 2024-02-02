@@ -7,12 +7,15 @@ import Capacitor
  */
 @objc(GeminiXPlugin)
 public class GeminiXPlugin: CAPPlugin {
-    private let implementation = GeminiX()
-
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
+    
+    
+    @objc func initModel(_ call: CAPPluginCall) {
+        let params = call.getObject("params") ?? [:])
+        GeminiX.initModel(onSuccess: {
+            self.sendPluginSuccess(command: command, keepCallback:false)
+        }, onError: { error in
+            self.sendPluginError(command: command, error: "\(error)", keepCallback:false)
+        }, params:params)
     }
+
 }

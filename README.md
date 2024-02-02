@@ -152,6 +152,9 @@ Params passed to {@link GoogleGenerativeAI.getGenerativeModel}.
 
 #### GeminiXResponseChunk
 
+Model response data passed to back to `sendMessage` and `sendChatMessage` functions.
+Also passed to event handlers registered on the `window` object for the `GeminiXResponseChunkEvent`.
+
 | Prop           | Type                 |
 | -------------- | -------------------- |
 | **`response`** | <code>string</code>  |
@@ -160,10 +163,10 @@ Params passed to {@link GoogleGenerativeAI.getGenerativeModel}.
 
 #### PluginSendMessageOptions
 
-| Prop                 | Type                        | Description                                                                                                                                                                                                                                                                                   |
-| -------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`images`**         | <code>GeminiXImage[]</code> | List of image URIs to be given to the model.                                                                                                                                                                                                                                                  |
-| **`streamResponse`** | <code>boolean</code>        | Whether to stream the response from the model. If `true`, then the `success` callback will be called multiple times with partial responses until the final response is received. The final response will be the full model response text and `isComplete` will be `true`. Default is `false`. |
+| Prop                 | Type                        | Description                                                                                                                                                                                                                                                                                                                                         |
+| -------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`images`**         | <code>GeminiXImage[]</code> | List of image URIs to be given to the model.                                                                                                                                                                                                                                                                                                        |
+| **`streamResponse`** | <code>boolean</code>        | Whether to stream the response from the model before the final response is received. If `true`, then event listeners registered on the `window` object for the `GeminiXResponseChunkEvent` will be called with partial responses until the final response is received. The final response will be the full model response text. Default is `false`. |
 
 
 #### GeminiXImage
@@ -179,6 +182,8 @@ The mimeType is optional and will attempt to be inferred from the URI if not spe
 
 #### GeminiXResponseCount
 
+Model response data passed to back to `countTokens` and `countChatTokens` functions.
+
 | Prop         | Type                 |
 | ------------ | -------------------- |
 | **`count`**  | <code>number</code>  |
@@ -187,41 +192,45 @@ The mimeType is optional and will attempt to be inferred from the URI if not spe
 
 #### PluginCountTokensOptions
 
-| Prop         | Type                        | Description                                  |
-| ------------ | --------------------------- | -------------------------------------------- |
-| **`images`** | <code>GeminiXImage[]</code> | List of image URIs to be given to the model. |
+| Prop         | Type                        | Description                                    |
+| ------------ | --------------------------- | ---------------------------------------------- |
+| **`images`** | <code>GeminiXImage[]</code> | List of image images to be given to the model. |
 
 
 #### PluginChatHistoryItem
 
-| Prop         | Type                        |
-| ------------ | --------------------------- |
-| **`isUser`** | <code>boolean</code>        |
-| **`text`**   | <code>string</code>         |
-| **`images`** | <code>GeminiXImage[]</code> |
+| Prop         | Type                        | Description                                        |
+| ------------ | --------------------------- | -------------------------------------------------- |
+| **`isUser`** | <code>boolean</code>        | Whether the message is from the user or the model. |
+| **`text`**   | <code>string</code>         | The text of the message.                           |
+| **`images`** | <code>GeminiXImage[]</code> | List of images to be given to the model.           |
 
 
 #### PluginCountChatTokensOptions
 
-| Prop            | Type                        | Description                                  |
-| --------------- | --------------------------- | -------------------------------------------- |
-| **`inputText`** | <code>string</code>         | User input text to be given to the model.    |
-| **`images`**    | <code>GeminiXImage[]</code> | List of image URIs to be given to the model. |
+| Prop            | Type                        | Description                               |
+| --------------- | --------------------------- | ----------------------------------------- |
+| **`inputText`** | <code>string</code>         | User input text to be given to the model. |
+| **`images`**    | <code>GeminiXImage[]</code> | List of images to be given to the model.  |
 
 
 #### ModelChatHistoryItem
 
-| Prop         | Type                                |
-| ------------ | ----------------------------------- |
-| **`isUser`** | <code>boolean</code>                |
-| **`parts`**  | <code>ModelChatHistoryPart[]</code> |
+A chat history item to be passed to `initChat` function.
+
+| Prop         | Type                                | Description                                        |
+| ------------ | ----------------------------------- | -------------------------------------------------- |
+| **`isUser`** | <code>boolean</code>                | Whether the message is from the user or the model. |
+| **`parts`**  | <code>ModelChatHistoryPart[]</code> | The parts of the message.                          |
 
 
 #### ModelChatHistoryPart
 
-| Prop          | Type                |
-| ------------- | ------------------- |
-| **`type`**    | <code>string</code> |
-| **`content`** | <code>string</code> |
+A chat history content part to be passed to `initChat` function.
+
+| Prop          | Type                | Description              |
+| ------------- | ------------------- | ------------------------ |
+| **`type`**    | <code>string</code> | The type of the part.    |
+| **`content`** | <code>string</code> | The content of the part. |
 
 </docgen-api>
