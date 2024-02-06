@@ -7,3 +7,6 @@
 [submodule "src/lib"]
 	path = src/lib
 	url = git@bitbucket.org:workingedge/gemini-x-web.git
+[submodule "ios/Plugin/generative-ai-swift"]
+	path = ios/Plugin/generative-ai-swift
+	url = https://github.com/google/generative-ai-swift.git
