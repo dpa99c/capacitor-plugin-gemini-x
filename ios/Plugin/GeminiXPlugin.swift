@@ -10,11 +10,11 @@ public class GeminiXPlugin: CAPPlugin {
     
     
     @objc func initModel(_ call: CAPPluginCall) {
-        let params = call.getObject("params") ?? [:])
+        let params = call.getObject("params") ?? [:];
         GeminiX.initModel(onSuccess: {
-            self.sendPluginSuccess(command: command, keepCallback:false)
+            //self.sendPluginSuccess(command: command, keepCallback:false)
         }, onError: { error in
-            self.sendPluginError(command: command, error: "\(error)", keepCallback:false)
+            //self.sendPluginError(command: command, error: "\(error)", keepCallback:false)
         }, params:params)
     }
 
