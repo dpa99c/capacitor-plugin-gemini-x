@@ -1,0 +1,7 @@
+{
+  "name": "Capacitor GeminiX Example",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
