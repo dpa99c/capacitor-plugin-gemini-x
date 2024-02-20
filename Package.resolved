@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "capacitor6-spm-test",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/generative-ai-swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e2cebcd90645a3a94c0c823696e510a176bc384a"
+      }
+    }
+  ],
+  "version" : 1
+}
