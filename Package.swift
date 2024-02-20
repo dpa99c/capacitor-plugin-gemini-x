@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "CapacitorGeminiXPlugin",
+    name: "CapacitorGeminiX",
     platforms: [.iOS(.v13)],
     products: [
         .library(
