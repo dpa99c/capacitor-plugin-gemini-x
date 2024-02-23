@@ -4,7 +4,7 @@ import type { GenerativeContentBlob } from '@google/generative-ai';
 import { GeminiXResponseChunkEvent } from './definitions';
 import type {GeminiXPlugin, } from './definitions';
 import { GeminiX } from './lib/GeminiX';
-import type { CountTokensOptions, ModelParams, SendMessageOptions, ModelChatHistoryItem, ChatHistoryItem, PluginCountTokensOptions, PluginSendMessageOptions, PluginCountChatTokensOptions, PluginChatHistoryItem, GeminiXResponseChunk, GeminiXResponseCount, GeminiXImage } from './lib/GeminiX.d';
+import type { CountTokensOptions, ModelParams, SendMessageOptions, ModelChatHistoryItem, ChatHistoryItem, PluginCountTokensOptions, PluginSendMessageOptions, PluginCountChatTokensOptions, PluginChatHistoryItem, GeminiXResponseChunk, GeminiXResponseCount, GeminiXImage } from './lib/GeminiXTypes';
 
 
 
