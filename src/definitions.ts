@@ -1,5 +1,5 @@
-import type {ModelParams, ModelChatHistoryItem, SafetySettings} from './lib/GeminiX';
-import {SafetySettingLevel, SafetySettingHarmCategory} from './lib/GeminiX';
+import type {ModelParams, ModelChatHistoryItem, SafetySettings} from './lib/GeminiX.d';
+import {SafetySettingLevel, SafetySettingHarmCategory} from './lib/GeminiX.d';
 
 export type {ModelParams, ModelChatHistoryItem, SafetySettings};
 export {SafetySettingLevel, SafetySettingHarmCategory};

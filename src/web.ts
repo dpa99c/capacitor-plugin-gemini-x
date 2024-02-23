@@ -3,8 +3,8 @@ import type { GenerativeContentBlob } from '@google/generative-ai';
 
 import type {GeminiXPlugin, PluginCountTokensOptions, PluginSendMessageOptions, PluginCountChatTokensOptions, PluginChatHistoryItem, GeminiXResponseChunk, GeminiXResponseCount, GeminiXImage} from './definitions';
 import { GeminiXResponseChunkEvent } from './definitions';
-import type { CountTokensOptions, ModelParams, SendMessageOptions, ModelChatHistoryItem, ChatHistoryItem } from './lib/GeminiX';
 import { GeminiX } from './lib/GeminiX';
+import type { CountTokensOptions, ModelParams, SendMessageOptions, ModelChatHistoryItem, ChatHistoryItem } from './lib/GeminiX.d';
 
 
 
