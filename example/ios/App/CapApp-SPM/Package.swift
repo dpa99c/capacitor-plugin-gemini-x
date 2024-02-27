@@ -4,7 +4,7 @@ import PackageDescription
 // DO NOT MODIFY THIS FILE - managed by Capacitor CLI commands
 let package = Package(
     name: "CapApp-SPM",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v15)],
     products: [
         .library(
             name: "CapApp-SPM",
@@ -19,8 +19,6 @@ let package = Package(
         .package(name: "CapacitorStatusBar", path: "../../../node_modules/@capacitor/status-bar"),
         .package(name: "CapacitorCamera", path: "../../../node_modules/@capacitor/camera"),
         .package(name: "CapacitorSplashScreen", path: "../../../node_modules/@capacitor/splash-screen"),
-        .package(name: "CapacitorGeminiX", path: "../../../.."),
-
     ],
     targets: [
         .target(
@@ -34,11 +32,19 @@ let package = Package(
                 .product(name: "StatusBarPlugin", package: "CapacitorStatusBar"),
                 .product(name: "CameraPlugin", package: "CapacitorCamera"),
                 .product(name: "SplashScreenPlugin", package: "CapacitorSplashScreen"),
-                .product(name: "GeminiXPlugin", package: "CapacitorGeminiX"),
+                .product(name: "GeminiXPlugin", package: "CapacitorPluginGeminiX")
             ]
         )
     ]
 )
+
+
+
+
+
+
+
+
 
 
 

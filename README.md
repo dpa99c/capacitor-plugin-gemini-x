@@ -21,6 +21,7 @@ npx cap sync
 * [`countChatTokens(...)`](#countchattokens)
 * [`getChatHistory()`](#getchathistory)
 * [Interfaces](#interfaces)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -143,11 +144,31 @@ Get the chat history for the current chat session.
 
 #### ModelParams
 
-Params passed to {@link GoogleGenerativeAI.getGenerativeModel}.
+Model parameters to be passed to `initModel` function.
 
-| Prop        | Type                |
-| ----------- | ------------------- |
-| **`model`** | <code>string</code> |
+| Prop                  | Type                                                      | Description                                    |
+| --------------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| **`modelName`**       | <code>string</code>                                       | The name of the model to be used.              |
+| **`apiKey`**          | <code>string</code>                                       | The API key to be used.                        |
+| **`temperature`**     | <code>number</code>                                       | The temperature to be used for generation.     |
+| **`topK`**            | <code>number</code>                                       | The topK to be used for generation.            |
+| **`topP`**            | <code>number</code>                                       | The topP to be used for generation.            |
+| **`maxOutputTokens`** | <code>number</code>                                       | The maximum number of tokens to be generated.  |
+| **`stopSequences`**   | <code>string[]</code>                                     | The stop sequences to be used for generation.  |
+| **`safetySettings`**  | <code><a href="#safetysettings">SafetySettings</a></code> | The safety settings to be used for generation. |
+
+
+#### SafetySettings
+
+Safety settings to be passed to `initModel` function.
+
+| Prop                                                | Type                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| **`[SafetySettingHarmCategory.HARASSMENT]`**        | <code><a href="#safetysettinglevel">SafetySettingLevel</a></code> |
+| **`[SafetySettingHarmCategory.HATE_SPEECH]`**       | <code><a href="#safetysettinglevel">SafetySettingLevel</a></code> |
+| **`[SafetySettingHarmCategory.SEXUALLY_EXPLICIT]`** | <code><a href="#safetysettinglevel">SafetySettingLevel</a></code> |
+| **`[SafetySettingHarmCategory.DANGEROUS_CONTENT]`** | <code><a href="#safetysettinglevel">SafetySettingLevel</a></code> |
+| **`[SafetySettingHarmCategory.UNSPECIFIED]`**       | <code><a href="#safetysettinglevel">SafetySettingLevel</a></code> |
 
 
 #### GeminiXResponseChunk
@@ -232,5 +253,19 @@ A chat history content part to be passed to `initChat` function.
 | ------------- | ------------------- | ------------------------ |
 | **`type`**    | <code>string</code> | The type of the part.    |
 | **`content`** | <code>string</code> | The content of the part. |
+
+
+### Enums
+
+
+#### SafetySettingLevel
+
+| Members                | Value                           |
+| ---------------------- | ------------------------------- |
+| **`NONE`**             | <code>"NONE"</code>             |
+| **`ONLY_HIGH`**        | <code>"ONLY_HIGH"</code>        |
+| **`MEDIUM_AND_ABOVE`** | <code>"MEDIUM_AND_ABOVE"</code> |
+| **`LOW_AND_ABOVE`**    | <code>"LOW_AND_ABOVE"</code>    |
+| **`UNSPECIFIED`**      | <code>"UNSPECIFIED"</code>      |
 
 </docgen-api>
