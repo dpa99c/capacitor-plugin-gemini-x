@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
 import {IonButton, IonContent, IonHeader, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, IonInput, loadingController, IonToggle} from '@ionic/vue';
-import {Capacitor} from "@capacitor/core";
-import { FilePicker } from '@capawesome/capacitor-file-picker';
 
 import {GeminiX, ModelParams, SafetySettingHarmCategory, SafetySettingLevel, SafetySettings, PluginSendMessageOptions, PluginCountTokensOptions, PluginChatHistoryItem, PluginCountChatTokensOptions, GeminiXResponseChunk, GeminiXResponseChunkEvent, GeminiXImage} from "capacitor-plugin-gemini-x";
 
@@ -200,7 +198,8 @@ const generateUID = () => {
 }
 
 const onPressChooseImage = async () => {
-  try {
+  null; // TODO use Camera plugin
+  /*try {
     const result = await FilePicker.pickImages({
       multiple: true,
     });
@@ -212,7 +211,7 @@ const onPressChooseImage = async () => {
     }
   } catch (e) {
     logError(e, 'pickImages');
-  }
+  }*/
 }
 
 const fileToUri = (file: File): string => {

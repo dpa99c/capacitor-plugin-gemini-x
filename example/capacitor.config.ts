@@ -6,6 +6,14 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https'
+  },
+  android: {
+    appendUserAgent: "android:application",
+    webContentsDebuggingEnabled: true
+  },
+  ios: {
+    appendUserAgent: "ios:application",
+    webContentsDebuggingEnabled: true
   }
 };
 
