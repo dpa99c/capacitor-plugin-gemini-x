@@ -13,6 +13,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor6-spm-test.git", branch: "main"),
         .package(name: "CapacitorPluginGeminiX", path: "../../../.."),
+        .package(name: "CapacitorGeminiX", path: "../../../.."),
         .package(name: "CapacitorApp", path: "../../../node_modules/@capacitor/app"),
         .package(name: "CapacitorHaptics", path: "../../../node_modules/@capacitor/haptics"),
         .package(name: "CapacitorKeyboard", path: "../../../node_modules/@capacitor/keyboard"),
@@ -32,11 +33,12 @@ let package = Package(
                 .product(name: "StatusBarPlugin", package: "CapacitorStatusBar"),
                 .product(name: "CameraPlugin", package: "CapacitorCamera"),
                 .product(name: "SplashScreenPlugin", package: "CapacitorSplashScreen"),
-                .product(name: "GeminiXPlugin", package: "CapacitorPluginGeminiX")
+                .product(name: "GeminiXPlugin", package: "CapacitorGeminiX")
             ]
         )
     ]
 )
+
 
 
 
