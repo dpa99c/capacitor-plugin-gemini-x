@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
 import {IonButton, IonContent, IonHeader, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, IonInput, loadingController, IonToggle} from '@ionic/vue';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import { Camera } from '@capacitor/camera';
 
 import {GeminiX, ModelParams, SafetySettingHarmCategory, SafetySettingLevel, SafetySettings, PluginSendMessageOptions, PluginCountTokensOptions, PluginChatHistoryItem, PluginCountChatTokensOptions, GeminiXResponseChunk, GeminiXResponseChunkEvent, GeminiXImage} from "capacitor-plugin-gemini-x";
 
@@ -218,11 +218,6 @@ const onPressChooseImage = async () => {
     logError(e, 'pickImages');
   }
 }
-
-const fileToUri = (file: File): string => {
-  return URL.createObjectURL(file);
-}
-
 const addImage = (name:string, image: GeminiXImage) => {
   images.value.push({name, image});
   log(`Added image: ${name}`);
