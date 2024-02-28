@@ -1,7 +1,7 @@
-import type {ModelParams, ModelChatHistoryItem, SafetySettings, PluginSendMessageOptions, GeminiXResponseChunk, PluginCountTokensOptions, GeminiXResponseCount, PluginChatHistoryItem, PluginCountChatTokensOptions} from './lib/GeminiXTypes';
+import type {ModelParams, ModelChatHistoryItem, SafetySettings, PluginSendMessageOptions, GeminiXResponseChunk, PluginCountTokensOptions, GeminiXResponseCount, PluginChatHistoryItem, PluginCountChatTokensOptions, GeminiXImage} from './lib/GeminiXTypes';
 import {SafetySettingLevel, SafetySettingHarmCategory} from './lib/GeminiXTypes';
 
-export type {ModelParams, ModelChatHistoryItem, SafetySettings};
+export type {ModelParams, ModelChatHistoryItem, SafetySettings, PluginSendMessageOptions, PluginCountTokensOptions, PluginChatHistoryItem, PluginCountChatTokensOptions, GeminiXResponseChunk, GeminiXImage};
 export {SafetySettingLevel, SafetySettingHarmCategory};
 
 /**

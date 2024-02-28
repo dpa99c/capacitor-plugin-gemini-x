@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
 import {IonButton, IonContent, IonHeader, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar, IonInput, loadingController, IonToggle} from '@ionic/vue';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 import {GeminiX, ModelParams, SafetySettingHarmCategory, SafetySettingLevel, SafetySettings, PluginSendMessageOptions, PluginCountTokensOptions, PluginChatHistoryItem, PluginCountChatTokensOptions, GeminiXResponseChunk, GeminiXResponseChunkEvent, GeminiXImage} from "capacitor-plugin-gemini-x";
 
@@ -198,20 +199,24 @@ const generateUID = () => {
 }
 
 const onPressChooseImage = async () => {
-  null; // TODO use Camera plugin
-  /*try {
-    const result = await FilePicker.pickImages({
-      multiple: true,
-    });
-    for(let i=0; i<result.files.length; i++) {
-      const file = result.files[i];
-      const name = file.name;
-      const uri = file.path || fileToUri(file.blob as File);
-      addImage(name, {uri, mimeType: file.mimeType});
+  try {
+    const result = await Camera.pickImages({});
+    for(let i=0; i<result.photos.length; i++) {
+      const file = result.photos[i];
+      let uri, name
+      if(file.webPath){
+        uri = file.webPath;
+        name = uri.split('/').pop()
+      }else{
+        uri = file.path as string;
+        name = uri.split('/').pop()!.split('.')[0];
+      }
+      const mimeType = `image/${file.format}`;
+      addImage(name as string, {uri, mimeType});
     }
   } catch (e) {
     logError(e, 'pickImages');
-  }*/
+  }
 }
 
 const fileToUri = (file: File): string => {
