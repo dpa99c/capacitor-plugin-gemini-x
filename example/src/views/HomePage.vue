@@ -9,7 +9,7 @@ import config from "@/config";
 
 const MAX_MODEL_RESPONSE_TIME_MS = 10000;
 
-const modelName = ref('gemini-pro');
+const modelName = ref('gemini-1.5-pro');
 const userInput = ref('');
 const streamResponse = ref(false);
 const images:any = ref([]);
