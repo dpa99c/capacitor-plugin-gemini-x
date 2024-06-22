@@ -395,8 +395,9 @@ onMounted(() => {
         <h2>Model</h2>
 
         <ion-select id="modelName" v-model="modelName" fill="solid" :style="{marginBottom: '1em'}">
-          <ion-select-option value="gemini-pro" selected="selected">Pro</ion-select-option>
-          <ion-select-option value="gemini-pro-vision">Pro Vision</ion-select-option>
+          <ion-select-option value="gemini-1.5-pro" selected="selected">1.5 Pro</ion-select-option>
+          <ion-select-option value="gemini-1.5-flash">1.5 Flash</ion-select-option>
+          <ion-select-option value="gemini-1.0-pro">1.0 Pro</ion-select-option>
         </ion-select>
 
         <ion-button @click="onPressInitModel()" size="small">Init Model</ion-button>
