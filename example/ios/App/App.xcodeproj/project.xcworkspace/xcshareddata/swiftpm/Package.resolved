@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "capacitor6-spm-test",
+      "identity" : "capacitor-swift-pm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ionic-team/capacitor6-spm-test.git",
+      "location" : "https://github.com/ionic-team/capacitor-swift-pm.git",
       "state" : {
         "branch" : "main",
-        "revision" : "98315c71c9231eb3511b2562281a62eaad8dbd34"
+        "revision" : "8f7e7c53fe74d331dac609ab6d0c5ec76d10fb0d"
       }
     },
     {
@@ -15,7 +15,7 @@
       "location" : "https://github.com/google/generative-ai-swift.git",
       "state" : {
         "branch" : "main",
-        "revision" : "ac4aea122b455af10c0038c8283d5600006dc52e"
+        "revision" : "54784005b57c2235a7669e0c12e8dafa68f0ca5f"
       }
     }
   ],

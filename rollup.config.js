@@ -4,7 +4,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorGeminiX',
+      name: 'GeminiXPlugin',
       globals: {
         '@capacitor/core': 'capacitorExports',
         '@google/generative-ai': 'generativeAI',

@@ -5,6 +5,7 @@ import Capacitor
  * Please read the Capacitor iOS Plugin Development Guide
  * here: https://capacitorjs.com/docs/plugins/ios
  */
+@available(iOS 15.0, *)
 @objc(GeminiXPlugin)
 public class GeminiXPlugin: CAPPlugin {
     public let identifier = "GeminiXPlugin"
