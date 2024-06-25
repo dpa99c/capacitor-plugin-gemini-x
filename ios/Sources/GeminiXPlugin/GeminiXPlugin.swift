@@ -6,9 +6,9 @@ import Capacitor
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @available(iOS 15.0, *)
-@objc(GeminiXPlugin)
-public class GeminiXPlugin: CAPPlugin {
-    public let identifier = "GeminiXPlugin"
+@objc(CAPGeminiXPlugin)
+public class GeminiXPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "CAPGeminiXPlugin"
     public let jsName = "GeminiX"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "initModel", returnType: CAPPluginReturnPromise),

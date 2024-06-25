@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "GeminiXPlugin",
+    name: "CapacitorGeminiX",
     platforms: [.iOS(.v13)],
     products: [
         .library(
-            name: "GeminiXPlugin",
+            name: "CapacitorGeminiX",
             targets: ["GeminiXPlugin"])
     ],
     dependencies: [
